@@ -1,0 +1,86 @@
+<style>
+  .product {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .variant {
+    margin-right: 10px;
+    text-align: center; /* 让文字居中显示 */
+  }
+  .variant img {
+    display: block;
+  }
+  .variant-size {
+    display: block;
+  }
+  .selected {
+    border: 2px solid green; /* 添加绿色边框 */
+  }
+  .hovered {
+    border: 1px solid lightgray; /* 添加浅灰色边框 */
+  }
+  /* 添加显示选中属性信息的样式 */
+  .selected-attributes {
+    display: flex;
+    justify-content: space-between; /* 实现左右对齐 */
+    align-items: center; /* 确保子元素垂直居中 */
+    margin-bottom: 20px;
+  }
+  .selected-attributes span {
+    flex: 1; /* 使两个 span 标签平分空间 */
+    text-align: center; /* 使文本居中显示 */
+  }
+  /* 单独设置 size 的左对齐 */
+  .selected-attributes #selected-size {
+    text-align: left;
+  }
+</style>
+
+<!-- 添加显示选中属性信息的容器 -->
+<div class="selected-attributes">
+  <span id="selected-size">Select Size (cm):xxx</span> <!-- 左对齐 -->
+  <span id="selected-sku">SKU#xxxxxx-xxxx</span> <!-- 居中对齐 -->
+</div>
+
+{% for product in collections.all.products %}
+  <div class="product">
+    <!-- 显示产品尺寸属性 -->
+    {% for variant in product.variants %}
+      <div class="variant">
+        {% if variant.image %}
+          <img class="variant-select" data-variant-id="{{ variant.id }}" src="{{ variant.image | img_url: '80x80' }}" alt="{{ variant.title | escape }}" data-variant-size="{{ variant.title }}" data-variant-sku="{{ variant.sku }}">
+        {% endif %}
+        <span class="variant-size">{{ variant.title }}</span> <!-- 将文字移动到图片下面 -->
+      </div>
+    {% endfor %}
+  </div>
+{% endfor %}
+
+<script>
+  document.querySelectorAll('.variant-select').forEach(function(img) {
+    img.addEventListener('click', function() {
+      // 移除所有已选中的元素的选中状态
+      document.querySelectorAll('.selected').forEach(function(selected) {
+        selected.classList.remove('selected');
+      });
+      
+      // 给选中的元素添加选中状态
+      this.parentElement.classList.add('selected');
+      
+      // 更新显示选中属性信息的容器
+      document.getElementById('selected-size').textContent = 'Select Size (cm): ' + this.dataset.variantSize;
+      document.getElementById('selected-sku').textContent = 'SKU# ' + this.dataset.variantSku;
+    });
+
+    // 处理鼠标悬停事件
+    img.addEventListener('mouseover', function() {
+      // 只有当元素没有被选中时，才添加悬停状态
+      if (!this.parentElement.classList.contains('selected')) {
+        this.parentElement.classList.add('hovered');
+      }
+    });
+    img.addEventListener('mouseout', function() {
+      this.parentElement.classList.remove('hovered');
+    });
+  });
+</script>
