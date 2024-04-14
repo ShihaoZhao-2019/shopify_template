@@ -38,20 +38,23 @@
 
 <!-- 添加显示选中属性信息的容器 -->
 <div class="selected-attributes">
-  <span id="selected-size">Select Size (cm):xxx</span> <!-- 左对齐 -->
-  <span id="selected-sku">SKU#xxxxxx-xxxx</span> <!-- 居中对齐 -->
+  <span id="selected-size">Select Size (cm): xxx</span> <!-- 左对齐 -->
+  <span id="selected-sku">SKU#: xxxxxx-xxxx</span> <!-- 居中对齐 -->
 </div>
 
 {% for product in collections.all.products %}
   <div class="product">
     <!-- 显示产品尺寸属性 -->
     {% for variant in product.variants %}
-      <div class="variant">
-        {% if variant.image %}
-          <img class="variant-select" data-variant-id="{{ variant.id }}" src="{{ variant.image | img_url: '80x80' }}" alt="{{ variant.title | escape }}" data-variant-size="{{ variant.title }}" data-variant-sku="{{ variant.sku }}">
-        {% endif %}
-        <span class="variant-size">{{ variant.title }}</span> <!-- 将文字移动到图片下面 -->
-      </div>
+      <!-- 检查变体标题是否为 'Default Title'，如果不是，则显示 -->
+      {% if variant.title != 'Default Title' %}
+        <div class="variant">
+          {% if variant.image %}
+            <img class="variant-select" data-variant-id="{{ variant.id }}" src="{{ variant.image | img_url: '80x80' }}" alt="{{ variant.title | escape }}" data-variant-size="{{ variant.title }}" data-variant-sku="{{ variant.sku }}">
+          {% endif %}
+          <span class="variant-size">{{ variant.title }}</span> <!-- 将文字移动到图片下面 -->
+        </div>
+      {% endif %}
     {% endfor %}
   </div>
 {% endfor %}
@@ -69,7 +72,7 @@
       
       // 更新显示选中属性信息的容器
       document.getElementById('selected-size').textContent = 'Select Size (cm): ' + this.dataset.variantSize;
-      document.getElementById('selected-sku').textContent = 'SKU# ' + this.dataset.variantSku;
+      document.getElementById('selected-sku').textContent = 'SKU#: ' + this.dataset.variantSku;
     });
 
     // 处理鼠标悬停事件
