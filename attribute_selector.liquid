@@ -43,6 +43,10 @@
   .selected-attributes #selected-size {
     text-align: left;
   }
+  
+  .selected-attributes #selected-inventory_quantity_now {
+    text-align: right;
+  }
 
   .selected-prices {
   display: flex;
@@ -60,37 +64,6 @@
   text-decoration: line-through; /* 添加删除线 */
   font-weight: normal; /* 字体不加粗 */
   font-size: 1em; /* 设置基础字体大小 */
-}
-
-.container {
-  display: flex; /* 使用Flexbox布局 */
-  align-items: center; /* 垂直居中对齐 */
-  padding: 5px;
-}
-
-.quantity-selector,
-.selected-show_inventory {
-  margin-right: 10px; /* 添加右边距 */
-}
-
-/* 其他样式保持不变 */
-.quantity-selector input {
-  text-align: center;
-  border: 2px solid #ccc; /* 浅灰色边框 */
-  border-radius: 15px; /* 椭圆形边框 */
-  width: auto; /* 自适应宽度 */
-  padding: 5px 10px; /* 内边距 */
-}
-
-.quantity-selector button {
-  background-color: #f2f2f2;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.quantity-selector button:active {
-  background-color: #e6e6e6;
 }
 
 .add-to-cart-button {
@@ -113,7 +86,6 @@
   background-color: #094b01;
 }
 
-
 </style>
 
 <!--
@@ -130,6 +102,7 @@
 <div class="selected-attributes">
   <span id="selected-size">Select Size (cm): xxx</span> <!-- 左对齐 -->
   <span id="selected-sku">SKU#: xxxxxx-xxxx</span> <!-- 居中对齐 -->
+  <span id="selected-inventory_quantity_now">Quantity:0</span><!-- 右对齐 -->
 </div>
 
 <!--
@@ -169,21 +142,6 @@
 <div class="selected-prices">
   <span id="selected-new_price">$xxxx.xx Sale</span>
   <span id="selected-old_price">Orig: $xxxx.xx</span>
-</div>
-
-<!-- Flex容器 -->
-<div class="container">
-  <!-- 数量选择器 -->
-  <div class="quantity-selector">
-    <button onclick="changeQuantity(-1)">-</button>
-    <input type="number" id="quantity" value="1">
-    <button onclick="changeQuantity(1)">+</button>
-  </div>
-
-  <!-- 库存显示 -->
-  <div class="selected-show_inventory">
-    <span id="selected-inventory_quantity_now">Quantity:0</span>
-  </div>
 </div>
     
     <!-- 加入购物车按钮## -->
@@ -381,9 +339,6 @@
       // 更新显示库存的信息容器
       document.getElementById('selected-inventory_quantity_now').textContent = 'Quantity: ' + this.dataset.variantInventory_quantity;
       max_inventory_quantity = this.dataset.variantInventory_quantity;
-
-      // 更新数量选择器
-      changeQuantityMax(1,1);
     });
 
     // 处理鼠标悬停事件
@@ -398,22 +353,17 @@
     });
   });
 
-  function changeQuantity(change) {
-    changeQuantityMax(change,max_inventory_quantity);
-  }
-
-  function changeQuantityMax(change,max_inventory_quantity){
-    var quantityInput = document.getElementById('quantity');
-    var currentQuantity = parseInt(quantityInput.value);
-    currentQuantity += change;
-    if(currentQuantity > max_inventory_quantity){
-      currentQuantity = max_inventory_quantity;
-    }
-    quantityInput.value = currentQuantity > 0 ? currentQuantity : 0;
-  }
-
   document.querySelector('.add-to-cart-button').addEventListener('click', function() {
-    alert('已添加到购物车！');
+  // 获取当前选中的变体元素
+  var selectedVariant = document.querySelector('.selected .variant-select');
+  if (selectedVariant) {
+    // 获取变体ID
+    var variantId = selectedVariant.dataset.variantId;
+    // 更新隐藏字段的值
+    document.querySelector('.product-variant-id').value = variantId;
+  }
+  // 显示添加到购物车的提示信息
+  // alert('已添加到购物车！');
   });
 
 </script>
