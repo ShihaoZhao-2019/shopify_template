@@ -34,6 +34,25 @@
   .selected-attributes #selected-size {
     text-align: left;
   }
+
+  .selected-prices {
+  display: flex;
+  flex-direction: column; /* 设置为列布局，使子元素垂直排列 */
+}
+
+#selected-new_price {
+  color: rgb(204, 0, 0); /* 设置字体颜色为红色 */
+  font-weight: bold; /* 字体加粗 */
+  font-size: 2em; /* 字体大小是selected-old_price的两倍 */
+}
+
+#selected-old_price {
+  color: black; /* 设置字体颜色为黑色 */
+  text-decoration: line-through; /* 添加删除线 */
+  font-weight: normal; /* 字体不加粗 */
+  font-size: 1em; /* 设置基础字体大小 */
+}
+
 </style>
 
 <!-- 添加显示选中属性信息的容器 -->
@@ -50,7 +69,14 @@
       {% if variant.title != 'Default Title' %}
         <div class="variant">
           {% if variant.image %}
-            <img class="variant-select" data-variant-id="{{ variant.id }}" src="{{ variant.image | img_url: '80x80' }}" alt="{{ variant.title | escape }}" data-variant-size="{{ variant.title }}" data-variant-sku="{{ variant.sku }}">
+            <img class="variant-select" 
+            data-variant-id="{{ variant.id }}" 
+            src="{{ variant.image | img_url: '80x80' }}" 
+            alt="{{ variant.title | escape }}" 
+            data-variant-size="{{ variant.title }}" 
+            data-variant-sku="{{ variant.sku }}" 
+            data-variant-new_price="{{ variant.price | money_without_currency }}"
+            data-variant-original_price="{{ variant.compare_at_price | money_without_currency }}">
           {% endif %}
           <span class="variant-size">{{ variant.title }}</span> <!-- 将文字移动到图片下面 -->
         </div>
@@ -59,7 +85,22 @@
   </div>
 {% endfor %}
 
+<!-- 添加显示价钱 -->
+<div class="selected-prices">
+  <span id="selected-new_price">$xxxx.xx Sale</span>
+  <span id="selected-old_price">Orig: $xxxx.xx</span>
+</div>
+
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+  // 确保DOM完全加载后执行以下代码
+  let firstVariant = document.querySelector('.variant-select');
+  if (firstVariant) {
+    // 模拟点击第一个变体选择器以更新价格
+    firstVariant.click();
+  }
+  });
+
   document.querySelectorAll('.variant-select').forEach(function(img) {
     img.addEventListener('click', function() {
       // 移除所有已选中的元素的选中状态
@@ -73,6 +114,10 @@
       // 更新显示选中属性信息的容器
       document.getElementById('selected-size').textContent = 'Select Size (cm): ' + this.dataset.variantSize;
       document.getElementById('selected-sku').textContent = 'SKU#: ' + this.dataset.variantSku;
+
+      // 更新显示价钱的信息容器
+      document.getElementById('selected-new_price').textContent = '$' + this.dataset.variantNew_price + ' Sale';
+      document.getElementById('selected-old_price').textContent = 'Orig: $' + this.dataset.variantOriginal_price;
     });
 
     // 处理鼠标悬停事件
