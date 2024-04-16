@@ -76,7 +76,8 @@
             data-variant-size="{{ variant.title }}" 
             data-variant-sku="{{ variant.sku }}" 
             data-variant-new_price="{{ variant.price | money_without_currency }}"
-            data-variant-original_price="{{ variant.compare_at_price | money_without_currency }}">
+            data-variant-original_price="{{ variant.compare_at_price | money_without_currency }}"
+            data-variant-inventory_quantity="{{ variant.inventory_quantity }}">
           {% endif %}
           <span class="variant-size">{{ variant.title }}</span> <!-- 将文字移动到图片下面 -->
         </div>
@@ -90,6 +91,12 @@
   <span id="selected-new_price">$xxxx.xx Sale</span>
   <span id="selected-old_price">Orig: $xxxx.xx</span>
 </div>
+
+<!-- 添加显示库存 -->
+<div class="selected-inventory_quantity">
+  <span id="selected-inventory_quantity_now">Quantity:0</span>
+</div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -118,6 +125,9 @@
       // 更新显示价钱的信息容器
       document.getElementById('selected-new_price').textContent = '$' + this.dataset.variantNew_price + ' Sale';
       document.getElementById('selected-old_price').textContent = 'Orig: $' + this.dataset.variantOriginal_price;
+
+      // 更新显示库存的信息容器
+      document.getElementById('selected-inventory_quantity_now').textContent = 'Quantity: ' + this.dataset.variantInventory_quantity;
     });
 
     // 处理鼠标悬停事件
@@ -132,3 +142,5 @@
     });
   });
 </script>
+
+
