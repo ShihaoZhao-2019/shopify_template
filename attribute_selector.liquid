@@ -1,4 +1,13 @@
+
 <style>
+  /*
+  ***********************************************************
+  ***********************************************************
+  形如这部分的是css代码
+  css代码负责的功能为设置网页的显示样式，以及设置选中变体的样式
+  ***********************************************************
+  ***********************************************************
+  */
   .product {
     display: flex;
     flex-wrap: wrap;
@@ -53,13 +62,62 @@
   font-size: 1em; /* 设置基础字体大小 */
 }
 
+.container {
+  display: flex; /* 使用Flexbox布局 */
+  align-items: center; /* 垂直居中对齐 */
+  padding: 5px;
+}
+
+.quantity-selector,
+.selected-show_inventory {
+  margin-right: 10px; /* 添加右边距 */
+}
+
+/* 其他样式保持不变 */
+.quantity-selector input {
+  text-align: center;
+  border: 2px solid #ccc; /* 浅灰色边框 */
+  border-radius: 15px; /* 椭圆形边框 */
+  width: auto; /* 自适应宽度 */
+  padding: 5px 10px; /* 内边距 */
+}
+
+.quantity-selector button {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.quantity-selector button:active {
+  background-color: #e6e6e6;
+}
+
 </style>
 
+<!--
+  ***********************************************************
+  ***********************************************************
+  形如这部分的是html代码，通常代码开头结尾有尖括号<></xx>
+  html代码负责的功能为创建内容容器
+  即网页需要显示什么内容:按钮、文本、输入框。。。
+  ***********************************************************
+  ***********************************************************
+
+-->
 <!-- 添加显示选中属性信息的容器 -->
 <div class="selected-attributes">
   <span id="selected-size">Select Size (cm): xxx</span> <!-- 左对齐 -->
   <span id="selected-sku">SKU#: xxxxxx-xxxx</span> <!-- 居中对齐 -->
 </div>
+
+<!--
+  ***********************************************************
+  形如这部分的是liquid代码，如下面的用法所示，liquid代码常用的使用
+  场景为和html代码互相嵌套生成网页内容
+  以及和shopify后台交互获取信息
+  ***********************************************************
+-->
 
 {% for product in collections.all.products %}
   <div class="product">
@@ -92,13 +150,33 @@
   <span id="selected-old_price">Orig: $xxxx.xx</span>
 </div>
 
-<!-- 添加显示库存 -->
-<div class="selected-inventory_quantity">
-  <span id="selected-inventory_quantity_now">Quantity:0</span>
+<!-- Flex容器 -->
+<div class="container">
+  <!-- 数量选择器 -->
+  <div class="quantity-selector">
+    <button onclick="changeQuantity(-1)">-</button>
+    <input type="number" id="quantity" value="1">
+    <button onclick="changeQuantity(1)">+</button>
+  </div>
+
+  <!-- 库存显示 -->
+  <div class="selected-show_inventory">
+    <span id="selected-inventory_quantity_now">Quantity:0</span>
+  </div>
 </div>
 
-
 <script>
+/*
+************************************************************
+************************************************************
+这部分是JavaScript代码
+负责的是一些动态效果，比如变量的计算和一些值的更新
+************************************************************
+************************************************************
+*/
+  //定义全局变量
+  var max_inventory_quantity = 0;
+
   document.addEventListener('DOMContentLoaded', function() {
   // 确保DOM完全加载后执行以下代码
   let firstVariant = document.querySelector('.variant-select');
@@ -128,6 +206,10 @@
 
       // 更新显示库存的信息容器
       document.getElementById('selected-inventory_quantity_now').textContent = 'Quantity: ' + this.dataset.variantInventory_quantity;
+      max_inventory_quantity = this.dataset.variantInventory_quantity;
+
+      // 更新数量选择器
+      changeQuantityMax(1,1);
     });
 
     // 处理鼠标悬停事件
@@ -141,6 +223,20 @@
       this.parentElement.classList.remove('hovered');
     });
   });
+
+  function changeQuantity(change) {
+    changeQuantityMax(change,max_inventory_quantity);
+  }
+
+  function changeQuantityMax(change,max_inventory_quantity){
+    var quantityInput = document.getElementById('quantity');
+    var currentQuantity = parseInt(quantityInput.value);
+    currentQuantity += change;
+    if(currentQuantity > max_inventory_quantity){
+      currentQuantity = max_inventory_quantity;
+    }
+    quantityInput.value = currentQuantity > 0 ? currentQuantity : 0;
+  }
 </script>
 
 
